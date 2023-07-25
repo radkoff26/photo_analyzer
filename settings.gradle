@@ -1,0 +1,23 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "PhotoAnalyzer"
+include ':app'
+include ':core-ai'
+include ':core-database'
+include ':core-images-provider'
+include ':core-extensions'
+include ':feature-images-list'
+include ':core-design'
+include ':feature-all-photos'
