@@ -59,4 +59,7 @@ dependencies {
 
     // Material
     implementation "com.google.android.material:material:$material_version"
+
+    // SkeletonLayout
+    implementation "com.faltenreich:skeletonlayout:$skeleton_layout_version"
 }

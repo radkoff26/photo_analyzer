@@ -51,7 +51,7 @@ class AllPhotosFragment : Fragment() {
             deviceImagesProvider.getNextNPhotos(50).collect {
                 if (it != null) {
                     binding.photosRecyclerView.adapter =
-                        AllPhotosRecyclerViewAdapter(it, viewModel::loadImageByImageId)
+                        AllPhotosRecyclerViewAdapter(it, viewModel::loadImageByImageId, 2)
                 }
             }
         }
