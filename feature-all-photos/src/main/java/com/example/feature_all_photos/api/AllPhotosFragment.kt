@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.core_images_provider.DeviceImagesProvider
 import com.example.feature_all_photos.R
 import com.example.feature_all_photos.databinding.FragmentAllPhotosBinding
-import com.example.feature_all_photos.internal.AllPhotosRecyclerViewAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.example.feature_all_photos.internal.adapter.AllPhotosRecyclerViewAdapter
+import com.example.feature_all_photos.internal.view_model.AllPhotosFragmentViewModel
 import kotlinx.coroutines.launch
 
 class AllPhotosFragment : Fragment() {
@@ -24,6 +23,8 @@ class AllPhotosFragment : Fragment() {
     private val deviceImagesProvider: DeviceImagesProvider
         get() = _deviceImagesProvider!!
 
+    private lateinit var viewModel: AllPhotosFragmentViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,6 +33,10 @@ class AllPhotosFragment : Fragment() {
 
         _binding = FragmentAllPhotosBinding.bind(rootView)
         _deviceImagesProvider = DeviceImagesProvider(requireContext())
+        viewModel = ViewModelProvider(
+            this,
+            AllPhotosFragmentViewModel.Factory(requireContext())
+        )[AllPhotosFragmentViewModel::class.java]
 
         return binding.root
     }
@@ -43,12 +48,10 @@ class AllPhotosFragment : Fragment() {
 
     private fun fetchImagesFromStorage() {
         lifecycleScope.launch {
-            CoroutineScope(Dispatchers.IO).launch {
-                val bitmapList = deviceImagesProvider.getNextNPhotos(50)
-                if (bitmapList != null) {
-                    requireActivity().runOnUiThread {
-                        binding.photosRecyclerView.adapter = AllPhotosRecyclerViewAdapter(bitmapList)
-                    }
+            deviceImagesProvider.getNextNPhotos(50).collect {
+                if (it != null) {
+                    binding.photosRecyclerView.adapter =
+                        AllPhotosRecyclerViewAdapter(it, viewModel::loadImageByImageId)
                 }
             }
         }

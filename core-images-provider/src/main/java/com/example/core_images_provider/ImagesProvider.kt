@@ -1,8 +1,8 @@
 package com.example.core_images_provider
 
-import android.net.Uri
+import kotlinx.coroutines.flow.Flow
 
 interface ImagesProvider {
 
-    fun getNextNPhotos(n: Int): List<Uri>?
+    fun getNextNPhotos(n: Int): Flow<List<Long>?>
 }
