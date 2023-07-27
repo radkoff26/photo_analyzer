@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.core_database.entities.ImageWithObjects
 import com.example.core_design.RoundedImageView
 import com.example.feature_all_photos.R
 import com.faltenreich.skeletonlayout.SkeletonLayout
@@ -15,10 +17,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 internal class AllPhotosRecyclerViewAdapter(
-    private val imagesUriList: List<Long>,
     private val loadImageCallback: (imageId: Long) -> Flow<Bitmap?>,
     private val spanCount: Int
-) : RecyclerView.Adapter<AllPhotosRecyclerViewAdapter.ViewHolder>() {
+) : PagingDataAdapter<ImageWithObjects, AllPhotosRecyclerViewAdapter.ViewHolder>(
+    ImageWithObjectsDiffCallback
+) {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val image: RoundedImageView = view.findViewById(R.id.image)
@@ -26,13 +29,13 @@ internal class AllPhotosRecyclerViewAdapter(
         private var bindInvocationCount = 0
 
         fun bind(position: Int) {
-            val imageId = imagesUriList[position]
+            val imageWithObjects = getItem(position)!!
             skeletonLayout.showSkeleton()
             image.setImageBitmap(null)
             bindInvocationCount++
             val currentCount = bindInvocationCount
             CoroutineScope(Dispatchers.Main).launch {
-                loadImageCallback.invoke(imageId).collect {
+                loadImageCallback.invoke(imageWithObjects.image.id).collect {
                     if (currentCount == bindInvocationCount) {
                         image.setImageBitmap(it)
                         // Так как bitmap в ImageView загружается не моментально,
@@ -50,8 +53,6 @@ internal class AllPhotosRecyclerViewAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.item_all_photos, parent, false)
         return ViewHolder(view)
     }
-
-    override fun getItemCount(): Int = imagesUriList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)

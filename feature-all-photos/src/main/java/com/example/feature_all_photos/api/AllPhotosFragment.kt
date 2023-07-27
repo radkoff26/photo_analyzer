@@ -4,26 +4,37 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.example.core_images_provider.DeviceImagesProvider
+import androidx.lifecycle.repeatOnLifecycle
+import com.example.core_database.ApplicationDatabase
 import com.example.feature_all_photos.R
 import com.example.feature_all_photos.databinding.FragmentAllPhotosBinding
 import com.example.feature_all_photos.internal.adapter.AllPhotosRecyclerViewAdapter
+import com.example.feature_all_photos.internal.data_source.ImagesMediator
 import com.example.feature_all_photos.internal.view_model.AllPhotosFragmentViewModel
+import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AllPhotosFragment : Fragment() {
+class AllPhotosFragment : DaggerFragment() {
     private var _binding: FragmentAllPhotosBinding? = null
     private val binding: FragmentAllPhotosBinding
         get() = _binding!!
 
-    private var _deviceImagesProvider: DeviceImagesProvider? = null
-    private val deviceImagesProvider: DeviceImagesProvider
-        get() = _deviceImagesProvider!!
+    @Inject
+    internal lateinit var applicationDatabase: ApplicationDatabase
 
-    private lateinit var viewModel: AllPhotosFragmentViewModel
+    @Inject
+    internal lateinit var imagesMediator: ImagesMediator
+
+    private var _recyclerViewAdapter: AllPhotosRecyclerViewAdapter? = null
+    private val recyclerViewAdapter: AllPhotosRecyclerViewAdapter
+        get() = _recyclerViewAdapter!!
+
+    @Inject
+    internal lateinit var viewModel: AllPhotosFragmentViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,26 +43,29 @@ class AllPhotosFragment : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_all_photos, container, false)
 
         _binding = FragmentAllPhotosBinding.bind(rootView)
-        _deviceImagesProvider = DeviceImagesProvider(requireContext())
+
         viewModel = ViewModelProvider(
             this,
-            AllPhotosFragmentViewModel.Factory(requireContext())
+            AllPhotosFragmentViewModel.Factory(
+                requireContext(),
+                imagesMediator
+            )
         )[AllPhotosFragmentViewModel::class.java]
+
+        _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(viewModel::loadImageByImageId, 2)
+
+        binding.photosRecyclerView.adapter = recyclerViewAdapter
+
+        fetchImagesFromStorage()
 
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        fetchImagesFromStorage()
-    }
-
     private fun fetchImagesFromStorage() {
         lifecycleScope.launch {
-            deviceImagesProvider.getNextNPhotos(50).collect {
-                if (it != null) {
-                    binding.photosRecyclerView.adapter =
-                        AllPhotosRecyclerViewAdapter(it, viewModel::loadImageByImageId, 2)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.items.collect {
+                    recyclerViewAdapter.submitData(it)
                 }
             }
         }

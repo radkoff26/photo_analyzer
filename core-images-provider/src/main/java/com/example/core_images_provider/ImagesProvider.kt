@@ -1,8 +1,8 @@
 package com.example.core_images_provider
 
-import kotlinx.coroutines.flow.Flow
+import com.example.core_database.entities.Image
 
 interface ImagesProvider {
 
-    fun getNextNPhotos(n: Int): Flow<List<Long>?>
+    suspend fun getPagedImages(currentKey: Int, pageSize: Int): List<Image>
 }

@@ -13,6 +13,9 @@ buildscript {
         // Coroutines
         coroutines_version = "1.7.2"
 
+        // Dagger
+        dagger_version = "2.47"
+
         // Lifecycle
         lifecycle_version = "2.6.1"
 
@@ -28,6 +31,9 @@ buildscript {
         // Tensor Flow Lite
         google_tflite_gpu = "16.2.0"
         tensor_flow_lite_vision = "0.4.2"
+
+        // Paging
+        paging_version = "3.1.1"
 
         // Skeleton Layout
         skeleton_layout_version = "4.0.0"

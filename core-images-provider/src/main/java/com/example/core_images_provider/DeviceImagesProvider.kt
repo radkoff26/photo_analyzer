@@ -2,10 +2,9 @@ package com.example.core_images_provider
 
 import android.content.Context
 import android.provider.MediaStore.Images.Media
+import com.example.core_database.entities.Image
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 import kotlin.math.min
 
 class DeviceImagesProvider(private val context: Context) : ImagesProvider {
@@ -13,7 +12,7 @@ class DeviceImagesProvider(private val context: Context) : ImagesProvider {
     private val cursor by lazy {
         context.contentResolver.query(
             contentUri,
-            arrayOf(Media._ID),
+            arrayOf(Media._ID, Media.DATE_MODIFIED),
             null,
             null,
             "${Media.DATE_ADDED} DESC"
@@ -22,34 +21,41 @@ class DeviceImagesProvider(private val context: Context) : ImagesProvider {
 
     private val lock = Any()
 
-    @Volatile
-    private var currentPosition = 0
+    override suspend fun getPagedImages(currentKey: Int, pageSize: Int): List<Image> {
+        return withContext(Dispatchers.IO) {
+            var index = currentKey
+            val end = min(cursor.count, currentKey + pageSize)
 
-    override fun getNextNPhotos(n: Int): Flow<List<Long>?> {
-        return flow {
-            if (currentPosition >= cursor.count) {
-                emit(null)
+            if (index >= cursor.count) {
+                return@withContext emptyList()
             }
 
-            val imagesList: MutableList<Long> = ArrayList()
+            val imagesList: MutableList<Image> = ArrayList()
 
             val imageIdColumnIndex = cursor.getColumnIndex(Media._ID)
+            val imageModificationDateColumnIndex = cursor.getColumnIndex(Media.DATE_MODIFIED)
 
             synchronized(lock) {
-                val bound = min(cursor.count, currentPosition + n)
-
-                while (currentPosition < bound) {
-                    cursor.moveToPosition(currentPosition)
+                while (index < end) {
+                    cursor.moveToPosition(index)
 
                     val imageId = cursor.getLong(imageIdColumnIndex)
+                    val imageModificationDate = cursor.getLong(imageModificationDateColumnIndex)
 
-                    imagesList.add(imageId)
+                    imagesList.add(
+                        Image(
+                            imageId,
+                            java.sql.Timestamp(imageModificationDate * 1000),
+                            0,
+                            0
+                        )
+                    )
 
-                    currentPosition++
+                    index++
                 }
             }
 
-            emit(imagesList)
-        }.flowOn(Dispatchers.IO)
+            return@withContext imagesList
+        }
     }
 }
