@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace 'com.example.core_design'
+    namespace 'com.example.core_view_model'
     compileSdk 33
 
     defaultConfig {
@@ -34,6 +34,6 @@ dependencies {
     // App Compat
     implementation "androidx.appcompat:appcompat:$app_compat_version"
 
-    // Material
-    implementation "com.google.android.material:material:$material_version"
+    // Dagger
+    implementation "com.google.dagger:dagger:$dagger_version"
 }

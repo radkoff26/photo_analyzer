@@ -1,10 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
-    namespace 'com.example.core_design'
+    namespace 'com.example.base'
     compileSdk 33
 
     defaultConfig {
@@ -30,10 +31,11 @@ android {
 }
 
 dependencies {
+    // Project modules
+    implementation project(":core-database")
+    implementation project(":core-images-provider")
 
-    // App Compat
-    implementation "androidx.appcompat:appcompat:$app_compat_version"
-
-    // Material
-    implementation "com.google.android.material:material:$material_version"
+    // Dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
 }

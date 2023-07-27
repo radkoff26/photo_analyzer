@@ -1,8 +1,8 @@
 package com.example.core_design
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
@@ -17,27 +17,10 @@ class RoundedImageView @JvmOverloads constructor(
     private val rectF = RectF()
     private val path = Path()
 
-    // Цвет для отдельной отрисовки background'а (закруглённого)
-    // Он будет отрисовываться отдельно в onDraw
-    private val backgroundPaint: Paint?
+    private var onImageChangedListener: OnImageChangedListener? = null
 
     var radius = 0F
         private set
-
-    init {
-        // Не устанавливаем цвет краски background'а, если цвет background'а не уставновлен на View
-        if (backgroundTintList?.defaultColor == null) {
-            backgroundPaint = null
-        } else {
-            backgroundPaint = Paint().apply {
-                color = backgroundTintList!!.defaultColor
-            }
-        }
-        // Обнуляем background, дабы он автоматически не рисовался не закруглённым
-        // Делегируем отрисовку background'а именно отдельно на onDraw
-        backgroundTintList = null
-        background = null
-    }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
@@ -50,12 +33,29 @@ class RoundedImageView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas?) {
+        // Ограничиваем View закруглённым контуром
         canvas?.clipPath(path)
-        // Если цвет background'а не установлен, то background отрисовываться не будет
-        if (backgroundPaint != null) {
-            canvas?.drawRoundRect(rectF, radius, radius, backgroundPaint)
-        }
         super.onDraw(canvas)
+    }
+
+    override fun setImageBitmap(bm: Bitmap?) {
+        if (bm == null) {
+            // Если bitmap - null, то это значит, что картинка удалена с View
+            // В таком случае, вызываем callback
+            onImageChangedListener?.onImageRemoved()
+            // Затем устанавливаем nullable bitmap
+            super.setImageBitmap(null)
+        } else {
+            // Если же bitmap - не null, то это означает, что картинка устанавливается
+            // Устанавливаем сам bitmap
+            super.setImageBitmap(bm)
+            // Вызываем callback
+            onImageChangedListener?.onImageSet()
+        }
+    }
+
+    fun setOnImageSettledListener(onImageChangedListener: OnImageChangedListener) {
+        this.onImageChangedListener = onImageChangedListener
     }
 
     companion object {

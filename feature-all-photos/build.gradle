@@ -12,7 +12,6 @@ android {
         minSdk 24
         targetSdk 33
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
@@ -36,11 +35,14 @@ android {
 
 dependencies {
     // Project modules
+    implementation project(":base")
     implementation project(":core-cache")
     implementation project(":core-database")
     implementation project(":core-design")
+    implementation project(":core-di")
     implementation project(":core-extensions")
     implementation project(":core-images-provider")
+    implementation project(":core-view-model")
 
     // App Compat
     implementation "androidx.appcompat:appcompat:$app_compat_version"
@@ -58,8 +60,6 @@ dependencies {
     // Dagger
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
     implementation "com.google.dagger:dagger:$dagger_version"
-    implementation "com.google.dagger:dagger-android:$dagger_version"
-    implementation "com.google.dagger:dagger-android-support:$dagger_version"
 
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"

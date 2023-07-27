@@ -17,22 +17,19 @@ class ImageCacheManagerImpl(private var context: Context?) : ImageCacheManager {
         }
     }
 
-    override fun loadImage(imageId: Long): Flow<Bitmap?> {
-        return flow {
-            val containedValue = imagesMap[imageId]
-            if (containedValue == null) {
-                emit(null)
-                context?.getImageFromExternalStorageById(imageId)?.collect {
-                    if (it != null) {
-                        imagesMap.put(imageId, it)
-                    }
-                    emit(it)
+    override fun loadImage(imageId: Long): Flow<Bitmap?> = flow {
+        val containedValue = imagesMap[imageId]
+        if (containedValue == null) {
+            context?.getImageFromExternalStorageById(imageId)?.collect {
+                if (it != null) {
+                    imagesMap.put(imageId, it)
                 }
-            } else {
-                emit(containedValue)
+                emit(it)
             }
-        }.flowOn(Dispatchers.IO)
-    }
+        } else {
+            emit(containedValue)
+        }
+    }.flowOn(Dispatchers.IO)
 
     fun onClear() {
         context = null

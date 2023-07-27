@@ -5,9 +5,8 @@ import com.example.core_database.entities.ImageWithObjects
 import com.example.core_images_provider.ImagesProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-internal class ImagesMediator @Inject constructor(
+internal class ImagesMediator constructor(
     private val imagesProvider: ImagesProvider,
     private val applicationDatabase: ApplicationDatabase
 ) {

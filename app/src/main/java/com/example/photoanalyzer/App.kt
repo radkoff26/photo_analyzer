@@ -1,12 +1,13 @@
 package com.example.photoanalyzer
 
-import com.example.photoanalyzer.di.components.DaggerAppComponent
-import dagger.android.AndroidInjector
-import dagger.android.support.DaggerApplication
+import android.app.Application
+import com.example.base.BaseDependencies
+import com.example.base.BaseDependenciesProvider
+import com.example.base.DaggerBaseComponent
 
-class App : DaggerApplication() {
+class App : Application(), BaseDependenciesProvider {
 
-    override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
-        return DaggerAppComponent.factory().create(this)
+    override val baseDependencies: BaseDependencies by lazy {
+        DaggerBaseComponent.factory().create(this)
     }
 }

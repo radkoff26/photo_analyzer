@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.provider.MediaStore
-import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,8 +12,16 @@ import kotlinx.coroutines.flow.flowOn
 import java.lang.Integer.max
 import kotlin.math.roundToInt
 
+/**
+ * Максимальный размер стороны картинки.
+ * */
 const val MAX_DIMENSION = 640
 
+/**
+ * Функция, возвращающая Flow с определённой картинкой из External Storage.
+ * @param imageId id картинки, которую нужно получить
+ * @return Flow, который эммитит bitmap картинки
+ * */
 fun Context.getImageFromExternalStorageById(imageId: Long): Flow<Bitmap?> {
     return flow {
         try {
@@ -26,12 +33,16 @@ fun Context.getImageFromExternalStorageById(imageId: Long): Flow<Bitmap?> {
                 emit(scaledBitmap)
             }
         } catch (e: Exception) {
-            Log.e("QWERTYUIOP", "getImageFromExternalStorageById: ", e)
             emit(null)
         }
     }.flowOn(Dispatchers.IO)
 }
 
+/**
+ * Функция для уменьшения bitmap'а до минимального размера стороны с сохранением соотношения сторон.
+ * @param bitmap bitmap картинки, которую нужно уменьшить
+ * @return уменьшенный bitmap
+ * */
 private fun scaleBitmapToMaxDimension(bitmap: Bitmap): Bitmap {
     val maxBitmapDimension = max(bitmap.height, bitmap.width)
     val scaledHeight: Int

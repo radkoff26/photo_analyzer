@@ -1,4 +1,4 @@
-package com.example.photoanalyzer.di.modules
+package com.example.base.modules
 
 import android.content.Context
 import com.example.core_images_provider.DeviceImagesProvider
@@ -9,7 +9,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-interface ImagesProviderModule {
+internal interface ImagesProviderModule {
 
     companion object {
         @Provides

@@ -1,9 +1,9 @@
 package com.example.photoanalyzer
 
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : DaggerAppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
