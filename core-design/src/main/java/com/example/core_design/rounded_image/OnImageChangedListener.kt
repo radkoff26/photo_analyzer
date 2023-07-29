@@ -1,4 +1,4 @@
-package com.example.core_design
+package com.example.core_design.rounded_image
 
 interface OnImageChangedListener {
 

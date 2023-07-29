@@ -14,9 +14,18 @@ internal class ImagesMediator constructor(
     suspend fun getPagedImages(startPosition: Int, pageSize: Int): List<ImageWithObjects> =
         withContext(Dispatchers.IO) {
             val imageWithObjectsDao = applicationDatabase.imageWithObjectsDao()
-            val imagesWithObjects = imageWithObjectsDao.getPagedImages(startPosition, pageSize)
-            return@withContext imagesWithObjects.ifEmpty {
-                getPagedImagesFromImagesProvider(startPosition, pageSize)
+            val imagesWithObjects = getPagedImagesFromImagesProvider(startPosition, pageSize)
+            return@withContext imagesWithObjects.map {
+                val imageWithObjects = imageWithObjectsDao.getImageById(it.image.id)
+                if (
+                    imageWithObjects != null
+                    && imageWithObjects.image.isProcessed
+                    && imageWithObjects.image.lastModificationTimestamp == it.image.lastModificationTimestamp
+                ) {
+                    imageWithObjects
+                } else {
+                    it
+                }
             }
         }
 

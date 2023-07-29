@@ -1,0 +1,76 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+}
+
+android {
+    namespace 'com.example.feature_image'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 24
+        targetSdk 33
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    // Project modules
+    implementation project(":base")
+    implementation project(":core-ai")
+    implementation project(":core-analyzer")
+    implementation project(":core-database")
+    implementation project(":core-design")
+    implementation project(":core-di")
+    implementation project(":core-extensions")
+    implementation project(":core-images-provider")
+    implementation project(":core-navigation")
+    implementation project(":core-view-model")
+
+    // App Compat
+    implementation "androidx.appcompat:appcompat:$app_compat_version"
+
+    // Constraint Layout
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_layout_version"
+
+    // Core Kotlin Extensions
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+
+    // Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    // Dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
+
+    // Lifecycle
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
+
+    // Material
+    implementation "com.google.android.material:material:$material_version"
+
+    // SkeletonLayout
+    implementation "com.faltenreich:skeletonlayout:$skeleton_layout_version"
+}

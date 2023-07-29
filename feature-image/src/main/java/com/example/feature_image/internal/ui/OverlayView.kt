@@ -1,17 +1,20 @@
-package com.example.photoanalyzer
+package com.example.feature_image.internal.ui
 
-/*
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
-import org.tensorflow.lite.task.gms.vision.detector.Detection
-import java.util.*
-import kotlin.math.max
+import com.example.core_database.entities.ObjectOnImage
 
-class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-    private var results: List<Detection> = LinkedList<Detection>()
+internal class OverlayView @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0,
+    defStyleRes: Int = 0
+) : View(context, attrs, defStyleAttr, defStyleRes) {
+    private var results: Map<String, ObjectOnImage> = emptyMap()
     private var boxPaint = Paint()
+    private var spottedBoxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
 
@@ -25,6 +28,8 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
     private var imageViewportWidth: Float = 0F
     private var imageViewportHeight: Float = 0F
+
+    private var spottedObjectKey: String? = null
 
     init {
         initPaints()
@@ -47,7 +52,11 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         textPaint.style = Paint.Style.FILL
         textPaint.textSize = 50f
 
-        boxPaint.color = Color.GREEN
+        spottedBoxPaint.color = Color.GREEN
+        spottedBoxPaint.strokeWidth = 8F
+        spottedBoxPaint.style = Paint.Style.STROKE
+
+        boxPaint.color = Color.LTGRAY
         boxPaint.strokeWidth = 8F
         boxPaint.style = Paint.Style.STROKE
     }
@@ -56,54 +65,69 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         super.draw(canvas)
 
         for (result in results) {
-            val boundingBox = result.boundingBox
+            val currentObject = result.value
+            val top = this.top + currentObject.top * scaleFactorY
+            val bottom = this.top + currentObject.bottom * scaleFactorY
+            val left = this.left + currentObject.left * scaleFactorX
+            val right = this.left + currentObject.right * scaleFactorX
 
-            val top = this.top + boundingBox.top * scaleFactorY
-            val bottom = this.top + boundingBox.bottom * scaleFactorY
-            val left = this.left + boundingBox.left * scaleFactorX
-            val right = this.left + boundingBox.right * scaleFactorX
+            val paintForBox = if (result.key == spottedObjectKey) {
+                spottedBoxPaint
+            } else {
+                boxPaint
+            }
 
-            // Draw bounding box around detected objects
             val drawableRect = RectF(left, top, right, bottom)
-            canvas.drawRect(drawableRect, boxPaint)
+            canvas.drawRect(drawableRect, paintForBox)
 
-            // Create text to display alongside detected objects
-            val drawableText =
-                result.categories[0].label + " " + String.format("%.2f", result.categories[0].score)
+            if (result.key == spottedObjectKey) {
+                val drawableText = result.key
 
-            // Draw rect behind display text
-            textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
-            val textWidth = bounds.width()
-            val textHeight = bounds.height()
-            canvas.drawRect(
-                left,
-                top,
-                left + textWidth + BOUNDING_RECT_TEXT_PADDING,
-                top + textHeight + BOUNDING_RECT_TEXT_PADDING,
-                textBackgroundPaint
-            )
+                textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
+                val textWidth = bounds.width()
+                val textHeight = bounds.height()
+                canvas.drawRect(
+                    left,
+                    top,
+                    left + textWidth + BOUNDING_RECT_TEXT_PADDING,
+                    top + textHeight + BOUNDING_RECT_TEXT_PADDING,
+                    textBackgroundPaint
+                )
 
-            // Draw text for detected object
-            canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
+                canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
+            }
         }
     }
 
     fun setResults(
-        detectionResults: MutableList<Detection>,
+        detectionResults: Map<String, ObjectOnImage>,
         imageHeight: Int,
         imageWidth: Int
     ) {
         results = detectionResults
 
+        updateDimensions(imageHeight, imageWidth)
+
+        invalidate()
+    }
+
+    fun spotObject(key: String) {
+        spottedObjectKey = key
+
+        invalidate()
+    }
+
+    private fun updateDimensions(
+        imageHeight: Int,
+        imageWidth: Int
+    ) {
         val imageAspectRatio = imageWidth.toFloat() / imageHeight.toFloat()
         val overlayAspectRatio = width.toFloat() / height.toFloat()
 
         if (imageAspectRatio > overlayAspectRatio) {
-            // Image is stretched by width
             imageViewportWidth = width.toFloat()
             imageViewportHeight = imageViewportWidth / imageAspectRatio
         } else {
-            // Image is stretched by height or fills the overlay viewport
             imageViewportHeight = height.toFloat()
             imageViewportWidth = imageViewportHeight * imageAspectRatio
         }
@@ -113,11 +137,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
 
         scaleFactorX = imageViewportWidth / imageWidth
         scaleFactorY = imageViewportHeight / imageHeight
-
-        invalidate()
     }
 
     companion object {
         private const val BOUNDING_RECT_TEXT_PADDING = 8
     }
-}*/
+}

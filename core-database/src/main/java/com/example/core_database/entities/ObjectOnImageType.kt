@@ -3,7 +3,7 @@ package com.example.core_database.entities
 /**
  * Тип объекта который может быть распознан ИИ.
  * */
-enum class ObjectOnMapType {
+enum class ObjectOnImageType {
     PERSON,
     CAT,
     DOG,

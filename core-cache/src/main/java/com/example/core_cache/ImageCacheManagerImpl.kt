@@ -3,7 +3,7 @@ package com.example.core_cache
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.LruCache
-import com.example.core_extensions.getImageFromExternalStorageById
+import com.example.core_extensions.getImageFromExternalStorageByIdScaledDown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,7 +20,7 @@ class ImageCacheManagerImpl(private var context: Context?) : ImageCacheManager {
     override fun loadImage(imageId: Long): Flow<Bitmap?> = flow {
         val containedValue = imagesMap[imageId]
         if (containedValue == null) {
-            context?.getImageFromExternalStorageById(imageId)?.collect {
+            context?.getImageFromExternalStorageByIdScaledDown(imageId)?.collect {
                 if (it != null) {
                     imagesMap.put(imageId, it)
                 }

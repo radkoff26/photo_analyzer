@@ -34,6 +34,5 @@ dependencies {
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
     // Tensor Flow
-    implementation "org.tensorflow:tensorflow-lite-task-vision-play-services:$tensor_flow_lite_vision"
-    implementation "com.google.android.gms:play-services-tflite-gpu:$google_tflite_gpu"
+    api "org.tensorflow:tensorflow-lite-task-vision-play-services:$tensor_flow_lite_vision"
 }

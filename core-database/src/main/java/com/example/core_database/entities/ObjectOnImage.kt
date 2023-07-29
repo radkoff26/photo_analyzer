@@ -20,7 +20,7 @@ data class ObjectOnImage(
     val id: Long,
     @ColumnInfo(index = true)
     val imageId: Long,
-    val type: ObjectOnMapType,
+    val type: ObjectOnImageType,
     val left: Float,
     val top: Float,
     val right: Float,

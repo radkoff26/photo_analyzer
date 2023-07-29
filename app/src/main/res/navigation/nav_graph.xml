@@ -9,4 +9,9 @@
         android:label="all_photos_fragment"
         android:name="com.example.feature_all_photos.api.AllPhotosFragment" />
 
+    <fragment
+        android:id="@+id/image_fragment"
+        android:label="image_fragment"
+        android:name="com.example.feature_image.api.ImageFragment" />
+
 </navigation>

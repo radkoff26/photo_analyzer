@@ -1,6 +1,9 @@
 package com.example.feature_all_photos.api
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +14,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.base.getBaseDependencies
+import com.example.core_actions.Actions
+import com.example.core_navigation.findNavigationController
 import com.example.feature_all_photos.R
 import com.example.feature_all_photos.databinding.FragmentAllPhotosBinding
 import com.example.feature_all_photos.internal.adapter.AllPhotosRecyclerViewAdapter
-import com.example.feature_all_photos.internal.data_source.ImagesMediator
 import com.example.feature_all_photos.internal.di.DaggerAllPhotosFragmentComponent
 import com.example.feature_all_photos.internal.view_model.AllPhotosFragmentViewModel
 import kotlinx.coroutines.launch
@@ -25,9 +29,6 @@ class AllPhotosFragment : Fragment() {
     private val binding: FragmentAllPhotosBinding
         get() = _binding!!
 
-    @Inject
-    internal lateinit var imagesMediator: ImagesMediator
-
     private var _recyclerViewAdapter: AllPhotosRecyclerViewAdapter? = null
     private val recyclerViewAdapter: AllPhotosRecyclerViewAdapter
         get() = _recyclerViewAdapter!!
@@ -35,6 +36,13 @@ class AllPhotosFragment : Fragment() {
     @Inject
     internal lateinit var viewModelFactory: ViewModelProvider.Factory
     private lateinit var viewModel: AllPhotosFragmentViewModel
+
+    private val databaseUpdateBroadcastReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context?, intent: Intent?) {
+//            recyclerViewAdapter.refresh()
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -56,7 +64,9 @@ class AllPhotosFragment : Fragment() {
         viewModel =
             ViewModelProvider(this, viewModelFactory)[AllPhotosFragmentViewModel::class.java]
 
-        _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(viewModel::loadImageByImageId, 2)
+        _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(viewModel::loadImageByImageId) {
+            findNavigationController().goToImage(it)
+        }
 
         binding.photosRecyclerView.adapter = recyclerViewAdapter
 
@@ -65,9 +75,28 @@ class AllPhotosFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        requireActivity().registerReceiver(
+            databaseUpdateBroadcastReceiver,
+            IntentFilter(Actions.DATABASE_UPDATED_ACTION)
+        )
+    }
+
+    override fun onPause() {
+        requireActivity().unregisterReceiver(databaseUpdateBroadcastReceiver)
+        super.onPause()
+    }
+
     override fun onStop() {
-        super.onStop()
         recyclerViewAdapter.cancelScope()
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        _recyclerViewAdapter = null
+        super.onDestroyView()
     }
 
     private fun fetchImagesFromStorage() {

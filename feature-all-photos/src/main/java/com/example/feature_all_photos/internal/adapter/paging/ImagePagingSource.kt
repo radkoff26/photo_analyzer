@@ -13,7 +13,7 @@ internal class ImagePagingSource(
         // If the paging is empty, return null for both prevKey and nextKey
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey ?: anchorPage?.nextKey
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
         }
     }
 

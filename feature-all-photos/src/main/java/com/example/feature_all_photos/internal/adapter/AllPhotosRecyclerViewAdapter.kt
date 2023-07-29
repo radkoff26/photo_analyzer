@@ -7,24 +7,22 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.core_database.entities.ImageWithObjects
-import com.example.core_design.OnImageChangedListener
-import com.example.core_design.RoundedImageView
+import com.example.core_design.rounded_image.OnImageChangedListener
 import com.example.feature_all_photos.R
-import com.faltenreich.skeletonlayout.SkeletonLayout
+import com.example.feature_all_photos.databinding.ItemAllPhotosBinding
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 
 internal class AllPhotosRecyclerViewAdapter(
     private val loadImageCallback: (imageId: Long) -> Flow<Bitmap?>,
-    private val spanCount: Int
+    private val onImageClickCallback: (imageId: Long) -> Unit
 ) : PagingDataAdapter<ImageWithObjects, AllPhotosRecyclerViewAdapter.ViewHolder>(
     ImageWithObjectsDiffCallback
 ) {
     private var adapterScope: CoroutineScope? = null
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val image: RoundedImageView = view.findViewById(R.id.image)
-        private var skeletonLayout: SkeletonLayout = view.findViewById(R.id.skeleton)
+        private val binding: ItemAllPhotosBinding = ItemAllPhotosBinding.bind(view)
         private var currentJob: Job? = null
 
         init {
@@ -36,26 +34,36 @@ internal class AllPhotosRecyclerViewAdapter(
 
             currentJob?.cancel()
 
-            image.setImageBitmap(null)
+            if (!imageWithObjects.image.isProcessed) {
+                binding.objectsCount.text = "-"
+            } else {
+                binding.objectsCount.text = imageWithObjects.objects.size.toString()
+            }
+
+            binding.image.setOnClickListener {
+                onImageClickCallback.invoke(imageWithObjects.image.id)
+            }
+
+            binding.image.setImageBitmap(null)
             currentJob = adapterScope?.launch {
                 loadImageCallback.invoke(imageWithObjects.image.id).collect {
-                    image.setImageBitmap(it)
+                    binding.image.setImageBitmap(it)
                 }
             }
         }
 
         private fun setImageChangeListener() {
-            image.setOnImageSettledListener(object : OnImageChangedListener {
+            binding.image.setOnImageSettledListener(object : OnImageChangedListener {
 
                 override fun onImageSet() {
-                    skeletonLayout.post {
-                        skeletonLayout.showOriginal()
+                    binding.skeleton.post {
+                        binding.skeleton.showOriginal()
                     }
                 }
 
                 override fun onImageRemoved() {
-                    skeletonLayout.post {
-                        skeletonLayout.showSkeleton()
+                    binding.skeleton.post {
+                        binding.skeleton.showSkeleton()
                     }
                 }
             })
@@ -79,9 +87,5 @@ internal class AllPhotosRecyclerViewAdapter(
     fun cancelScope() {
         adapterScope?.cancel()
         adapterScope = null
-    }
-
-    companion object {
-        const val SKELETON_REMOVAL_DELAY = 500L
     }
 }

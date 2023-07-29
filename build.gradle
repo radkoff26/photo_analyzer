@@ -29,7 +29,6 @@ buildscript {
         room_version = "2.5.2"
 
         // Tensor Flow Lite
-        google_tflite_gpu = "16.2.0"
         tensor_flow_lite_vision = "0.4.2"
 
         // Paging

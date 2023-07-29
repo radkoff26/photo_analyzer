@@ -18,24 +18,50 @@ import kotlin.math.roundToInt
 const val MAX_DIMENSION = 640
 
 /**
- * Функция, возвращающая Flow с определённой картинкой из External Storage.
+ * Функция, возвращающая Flow с определённой уменьшенной картинкой из External Storage.
  * @param imageId id картинки, которую нужно получить
  * @return Flow, который эммитит bitmap картинки
  * */
-fun Context.getImageFromExternalStorageById(imageId: Long): Flow<Bitmap?> {
+fun Context.getImageFromExternalStorageByIdScaledDown(imageId: Long): Flow<Bitmap?> {
     return flow {
-        try {
-            val uri =
-                ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
-            contentResolver.openInputStream(uri).use {
-                val bitmap = BitmapFactory.decodeStream(it)
-                val scaledBitmap = scaleBitmapToMaxDimension(bitmap)
-                emit(scaledBitmap)
-            }
-        } catch (e: Exception) {
-            emit(null)
-        }
+        val bitmap = getImageFromExternalStorageByIdSyncScaledDown(imageId)
+        emit(bitmap)
     }.flowOn(Dispatchers.IO)
+}
+
+/**
+ * Функция, возвращающая уменьшенный bitmap определённой картинки из External Storage синхронно.
+ * @param imageId id картинки, которую нужно получить
+ * @return bitmap картинки или null, если произошла ошибка
+ * */
+fun Context.getImageFromExternalStorageByIdSyncScaledDown(imageId: Long): Bitmap? {
+    try {
+        val uri =
+            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
+        contentResolver.openInputStream(uri).use {
+            val bitmap = BitmapFactory.decodeStream(it)
+            return scaleBitmapToMaxDimension(bitmap)
+        }
+    } catch (e: Exception) {
+        return null
+    }
+}
+
+/**
+ * Функция, возвращающая bitmap определённой картинки из External Storage синхронно.
+ * @param imageId id картинки, которую нужно получить
+ * @return bitmap картинки или null, если произошла ошибка
+ * */
+fun Context.getImageFromExternalStorageByIdSync(imageId: Long): Bitmap? {
+    try {
+        val uri =
+            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
+        contentResolver.openInputStream(uri).use {
+            return BitmapFactory.decodeStream(it)
+        }
+    } catch (e: Exception) {
+        return null
+    }
 }
 
 /**
