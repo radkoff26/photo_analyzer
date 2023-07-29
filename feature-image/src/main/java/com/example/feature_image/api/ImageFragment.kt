@@ -61,8 +61,6 @@ class ImageFragment : Fragment() {
 
         imageFragmentViewModel.requestImageLoading()
 
-        initAdapterAndOverlay()
-
         return binding.root
     }
 
@@ -73,6 +71,8 @@ class ImageFragment : Fragment() {
             viewLifecycleOwner
         ) {
             binding.image.setImageBitmap(it)
+
+            initAdapterAndOverlay()
         }
     }
 

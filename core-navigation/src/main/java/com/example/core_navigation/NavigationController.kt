@@ -2,7 +2,7 @@ package com.example.core_navigation
 
 interface NavigationController {
 
-    fun goToAllPhotos()
+    fun goToAllImages()
 
     fun goToImage(imageId: Long)
 

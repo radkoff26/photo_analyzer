@@ -8,7 +8,7 @@ import com.example.photoanalyzer.R
 
 class NavigationControllerImpl(private val navController: NavController) : NavigationController {
 
-    override fun goToAllPhotos() {
+    override fun goToAllImages() {
         navController.navigate(R.id.all_photos_fragment)
     }
 

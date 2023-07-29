@@ -6,12 +6,12 @@
 
     <fragment
         android:id="@+id/all_photos_fragment"
-        android:label="all_photos_fragment"
-        android:name="com.example.feature_all_photos.api.AllPhotosFragment" />
+        android:name="com.example.feature_all_photos.api.AllPhotosFragment"
+        android:label="all_photos_fragment" />
 
     <fragment
         android:id="@+id/image_fragment"
-        android:label="image_fragment"
-        android:name="com.example.feature_image.api.ImageFragment" />
+        android:name="com.example.feature_image.api.ImageFragment"
+        android:label="image_fragment" />
 
 </navigation>

@@ -1,7 +1,9 @@
 package com.example.feature_analyzer.api
 
+import android.Manifest
 import android.app.Service
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.IBinder
 import com.example.base.getBaseDependencies
 import com.example.core_actions.Actions
@@ -28,6 +30,10 @@ class AnalyzingService : Service() {
     internal lateinit var applicationDatabase: ApplicationDatabase
 
     private val pollingCallback: PollingCallback = PollingCallback {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            return@PollingCallback
+        }
+
         val allDeviceExternalImages = imagesProvider.getAllImagesSync()
         val imageWithObjectsDao = applicationDatabase.imageWithObjectsDao()
 
