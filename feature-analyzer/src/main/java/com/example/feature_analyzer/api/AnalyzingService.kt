@@ -46,7 +46,7 @@ class AnalyzingService : Service() {
                 || it.lastModificationTimestamp != imageFromDatabase.image.lastModificationTimestamp
             ) {
                 analyzeImageAndInsertIntoDatabase(it, imageWithObjectsDao)
-                sendBroadcast(Intent(Actions.DATABASE_UPDATED_ACTION))
+                sendUpdateBroadcast(it.id)
             }
         }
     }
@@ -74,6 +74,13 @@ class AnalyzingService : Service() {
         super.onDestroy()
     }
 
+    private fun sendUpdateBroadcast(imageId: Long) {
+        val intent = Intent(Actions.ItemUpdatedAction.DATABASE_UPDATED_ACTION).apply {
+            putExtra(Actions.ItemUpdatedAction.PAYLOAD_IMAGE_ID, imageId)
+        }
+        sendBroadcast(intent)
+    }
+
     private suspend fun analyzeImageAndInsertIntoDatabase(image: Image, dao: ImageWithObjectsDao) {
         val imageBitmap = getImageFromExternalStorageByIdSyncScaledDown(image.id)
         if (imageBitmap != null) {
@@ -84,6 +91,5 @@ class AnalyzingService : Service() {
 
     companion object {
         private const val TIMEOUT = 30_000L // 30s
-        const val TAG = "AnalyzingServiceClass"
     }
 }

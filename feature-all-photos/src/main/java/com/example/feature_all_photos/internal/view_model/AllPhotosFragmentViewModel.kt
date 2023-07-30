@@ -8,8 +8,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.core_cache.ImageCacheManager
-import com.example.core_database.entities.ImageWithObjects
 import com.example.feature_all_photos.internal.adapter.paging.ImagePagingSource
+import com.example.feature_all_photos.internal.data.ImageWithCount
 import com.example.feature_all_photos.internal.data_source.ImagesMediator
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -19,10 +19,11 @@ internal class AllPhotosFragmentViewModel @Inject constructor(
     private val cacheManager: ImageCacheManager
 ) : ViewModel() {
 
-    val items: Flow<PagingData<ImageWithObjects>> =
+    val items: Flow<PagingData<ImageWithCount>> =
         Pager(
             config = PagingConfig(
-                PAGE_SIZE,
+                pageSize = PAGE_SIZE,
+                initialLoadSize = PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {

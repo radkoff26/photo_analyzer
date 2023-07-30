@@ -6,18 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.core_database.entities.ImageWithObjects
 import com.example.core_design.rounded_image.OnImageChangedListener
 import com.example.feature_all_photos.R
 import com.example.feature_all_photos.databinding.ItemAllPhotosBinding
+import com.example.feature_all_photos.internal.data.ImageWithCount
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 
 internal class AllPhotosRecyclerViewAdapter(
     private val loadImageCallback: (imageId: Long) -> Flow<Bitmap?>,
     private val onImageClickCallback: (imageId: Long) -> Unit
-) : PagingDataAdapter<ImageWithObjects, AllPhotosRecyclerViewAdapter.ViewHolder>(
-    ImageWithObjectsDiffCallback
+) : PagingDataAdapter<ImageWithCount, AllPhotosRecyclerViewAdapter.ViewHolder>(
+    ImageWithCountDiffCallback
 ) {
     private var adapterScope: CoroutineScope? = null
 
@@ -37,7 +37,7 @@ internal class AllPhotosRecyclerViewAdapter(
             if (!imageWithObjects.image.isProcessed) {
                 binding.objectsCount.text = "-"
             } else {
-                binding.objectsCount.text = imageWithObjects.objects.size.toString()
+                binding.objectsCount.text = imageWithObjects.count.toString()
             }
 
             binding.image.setOnClickListener {

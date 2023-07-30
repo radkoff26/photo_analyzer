@@ -40,7 +40,18 @@ class AllPhotosFragment : Fragment() {
     private val databaseUpdateBroadcastReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent?) {
-//            recyclerViewAdapter.refresh()
+            /**
+             * В данном случае неплохо обновить RecyclerView,
+             * дабы отобразить новое количество отображённых
+             * объектов на картинке. Путь с recyclerViewAdapter.refresh()
+             * не работает - какая бы реализация getRefreshKey() ни была:
+             * в этом случае начинается дергание объектов и их постоянное
+             * перемещение по RecyclerView, которое не соответствует
+             * верному развитию событий.
+             * Была идея попробовать реализовать что-то через notifyItemChanged,
+             * что тоже не привело к нужному результату.
+             * Итог: этот функционал доделан не был.
+             * */
         }
     }
 
@@ -64,7 +75,9 @@ class AllPhotosFragment : Fragment() {
         viewModel =
             ViewModelProvider(this, viewModelFactory)[AllPhotosFragmentViewModel::class.java]
 
-        _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(viewModel::loadImageByImageId) {
+        _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(
+            viewModel::loadImageByImageId
+        ) {
             findNavigationController().goToImage(it, null)
         }
 
@@ -79,7 +92,7 @@ class AllPhotosFragment : Fragment() {
         super.onResume()
         requireActivity().registerReceiver(
             databaseUpdateBroadcastReceiver,
-            IntentFilter(Actions.DATABASE_UPDATED_ACTION)
+            IntentFilter(Actions.ItemUpdatedAction.DATABASE_UPDATED_ACTION)
         )
     }
 
