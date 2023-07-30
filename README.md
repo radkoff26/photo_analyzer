@@ -9,4 +9,4 @@
 
 ## Отчёт
 
-Отчёт по работе над приложением: [ссылка](https://github.com/radkoff26/photo_analyzer/REPORT.md).
+Отчёт по работе над приложением: [ссылка](https://github.com/radkoff26/photo_analyzer/blob/main/REPORT.md).
