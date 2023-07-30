@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -27,11 +28,22 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     // Project modules
+    implementation project(":base")
+    implementation project(":core-cache")
+    implementation project(":core-database")
+    implementation project(":core-di")
+    implementation project(":core-design")
+    implementation project(":core-extensions")
     implementation project(":core-images-provider")
+    implementation project(":core-navigation")
+    implementation project(":core-view-model")
 
     // App Compat
     implementation "androidx.appcompat:appcompat:$app_compat_version"
@@ -42,6 +54,16 @@ dependencies {
     // Core Kotlin Extensions
     implementation "androidx.core:core-ktx:$core_ktx_version"
 
+    // Dagger
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger:$dagger_version"
+
     // Material
     implementation "com.google.android.material:material:$material_version"
+
+    // Paging
+    implementation "androidx.paging:paging-runtime:$paging_version"
+
+    // SkeletonLayout
+    implementation "com.faltenreich:skeletonlayout:$skeleton_layout_version"
 }

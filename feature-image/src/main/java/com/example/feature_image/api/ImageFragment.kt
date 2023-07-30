@@ -9,9 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.base.getBaseDependencies
+import com.example.core_database.entities.ObjectOnImageType
 import com.example.core_navigation.findNavigationController
 import com.example.feature_image.R
 import com.example.feature_image.api.ImageFragment.Contraction.IMAGE_ID
+import com.example.feature_image.api.ImageFragment.Contraction.TYPE
 import com.example.feature_image.databinding.FragmentImageBinding
 import com.example.feature_image.internal.adapter.ObjectsListAdapter
 import com.example.feature_image.internal.di.DaggerImageFragmentComponent
@@ -56,7 +58,9 @@ class ImageFragment : Fragment() {
             findNavigationController().back()
         } else {
             val imageId = requireArguments().getLong(IMAGE_ID)
-            imageFragmentViewModel.init(imageId)
+            val typeString = requireArguments().getString(TYPE)
+            val type = if (typeString == null) null else ObjectOnImageType.valueOf(typeString)
+            imageFragmentViewModel.init(imageId, type)
         }
 
         imageFragmentViewModel.requestImageLoading()
@@ -84,11 +88,11 @@ class ImageFragment : Fragment() {
 
     private fun initAdapterAndOverlay() {
         lifecycleScope.launch {
-            val objects = imageFragmentViewModel.getObjectsKeySorted()
+            val objects = imageFragmentViewModel.getObjectsKeySortedAndFilteredIfNecessary()
             _objectsListAdapter = ObjectsListAdapter(
                 objects.entries.map { Pair(it.key, it.value) },
                 {
-
+                    findNavigationController().goToImagesList(it.toString())
                 },
                 {
                     binding.overlay.spotObject(it)
@@ -107,5 +111,6 @@ class ImageFragment : Fragment() {
 
     object Contraction {
         const val IMAGE_ID = "IMAGE_ID"
+        const val TYPE = "TYPE"
     }
 }

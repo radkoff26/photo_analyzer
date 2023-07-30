@@ -65,7 +65,7 @@ class AllPhotosFragment : Fragment() {
             ViewModelProvider(this, viewModelFactory)[AllPhotosFragmentViewModel::class.java]
 
         _recyclerViewAdapter = AllPhotosRecyclerViewAdapter(viewModel::loadImageByImageId) {
-            findNavigationController().goToImage(it)
+            findNavigationController().goToImage(it, null)
         }
 
         binding.photosRecyclerView.adapter = recyclerViewAdapter
@@ -108,9 +108,5 @@ class AllPhotosFragment : Fragment() {
                 }
             }
         }
-    }
-
-    companion object {
-        const val TAG = "AllPhotosFragmentClass"
     }
 }

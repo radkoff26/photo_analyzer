@@ -28,10 +28,13 @@ internal class ImageFragmentViewModel @Inject constructor(
     val imageBitmapLiveData: LiveData<Bitmap?> = _imageBitmapLiveData
 
     private var imageId: Long? = null
+    private var type: ObjectOnImageType? = null
     private var imageWithObjects: ImageWithObjects? = null
 
-    fun init(imageId: Long) {
+    @JvmOverloads
+    fun init(imageId: Long, type: ObjectOnImageType? = null) {
         this.imageId = imageId
+        this.type = type
     }
 
     fun requestImageLoading() {
@@ -46,8 +49,18 @@ internal class ImageFragmentViewModel @Inject constructor(
 
     fun getLoadedImage(): Image? = imageWithObjects?.image
 
-    suspend fun getObjectsKeySorted(): Map<String, ObjectOnImage> {
+    suspend fun getObjectsKeySortedAndFilteredIfNecessary(): Map<String, ObjectOnImage> {
         imageId!! // Needs to be initialized
+        return if (type == null) {
+            getObjectsKeySorted()
+        } else {
+            getObjectsKeySorted().filter {
+                it.value.type == type
+            }
+        }
+    }
+
+    private suspend fun getObjectsKeySorted(): Map<String, ObjectOnImage> {
         if (imageWithObjects != null) {
             return extractObjectsAndFormMap(imageWithObjects!!).toSortedMap()
         }
@@ -64,7 +77,16 @@ internal class ImageFragmentViewModel @Inject constructor(
                 val imageInstance = imagesProvider.getImageById(imageId)!!
                 val analyzedImage = imageAnalyzer.analyzeImage(imageInstance, bitmap)
                 applicationDatabase.imageWithObjectsDao().insertImageWithObjects(analyzedImage)
-                analyzedImage
+                if (type == null) {
+                    analyzedImage
+                } else {
+                    analyzedImage.copy(
+                        image = analyzedImage.image,
+                        objects = analyzedImage.objects.filter {
+                            it.type == type
+                        }
+                    )
+                }
             } else {
                 imageWithObjects
             }

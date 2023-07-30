@@ -11,7 +11,7 @@ import java.sql.Timestamp
  * @param height высота картинки
  * @param width ширина картинки
  * */
-@Entity
+@Entity(tableName = "image")
 data class Image(
     @PrimaryKey
     val id: Long,

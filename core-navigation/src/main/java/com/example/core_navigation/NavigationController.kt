@@ -4,7 +4,7 @@ interface NavigationController {
 
     fun goToAllImages()
 
-    fun goToImage(imageId: Long)
+    fun goToImage(imageId: Long, stringifiedType: String?)
 
     fun goToImagesList(stringifiedType: String)
 

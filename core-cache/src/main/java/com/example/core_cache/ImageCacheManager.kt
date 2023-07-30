@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface ImageCacheManager {
 
     fun loadImage(imageId: Long): Flow<Bitmap?>
+
+    fun onClear()
 }

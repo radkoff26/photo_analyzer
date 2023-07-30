@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
  * @param right правая координата объекта на картинке
  * @param bottom нижняя координата объекта на картинке
  * */
-@Entity
+@Entity(tableName = "object")
 data class ObjectOnImage(
     @PrimaryKey(autoGenerate = true)
     val id: Long,

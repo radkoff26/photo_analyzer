@@ -7,7 +7,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.core_cache.ImageCacheManagerImpl
+import com.example.core_cache.ImageCacheManager
 import com.example.core_database.entities.ImageWithObjects
 import com.example.feature_all_photos.internal.adapter.paging.ImagePagingSource
 import com.example.feature_all_photos.internal.data_source.ImagesMediator
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 internal class AllPhotosFragmentViewModel @Inject constructor(
     private val imagesMediator: ImagesMediator,
-    private val cacheManager: ImageCacheManagerImpl
+    private val cacheManager: ImageCacheManager
 ) : ViewModel() {
 
     val items: Flow<PagingData<ImageWithObjects>> =

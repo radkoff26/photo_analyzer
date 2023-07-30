@@ -31,7 +31,7 @@ class ImageCacheManagerImpl(private var context: Context?) : ImageCacheManager {
         }
     }.flowOn(Dispatchers.IO)
 
-    fun onClear() {
+    override fun onClear() {
         context = null
     }
 }

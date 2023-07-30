@@ -40,6 +40,7 @@ dependencies {
     implementation project(":feature-all-photos")
     implementation project(":feature-analyzer")
     implementation project(":feature-image")
+    implementation project(":feature-images-list")
 
     // App Compat
     implementation "androidx.appcompat:appcompat:$app_compat_version"

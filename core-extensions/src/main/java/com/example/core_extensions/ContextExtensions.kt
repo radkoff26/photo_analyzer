@@ -15,7 +15,7 @@ import kotlin.math.roundToInt
 /**
  * Максимальный размер стороны картинки.
  * */
-const val MAX_DIMENSION = 640
+const val MAX_DIMENSION = 400
 
 /**
  * Функция, возвращающая Flow с определённой уменьшенной картинкой из External Storage.
@@ -34,13 +34,16 @@ fun Context.getImageFromExternalStorageByIdScaledDown(imageId: Long): Flow<Bitma
  * @param imageId id картинки, которую нужно получить
  * @return bitmap картинки или null, если произошла ошибка
  * */
-fun Context.getImageFromExternalStorageByIdSyncScaledDown(imageId: Long): Bitmap? {
+fun Context.getImageFromExternalStorageByIdSyncScaledDown(
+    imageId: Long,
+    maxDimension: Int = MAX_DIMENSION
+): Bitmap? {
     try {
         val uri =
             ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
         contentResolver.openInputStream(uri).use {
             val bitmap = BitmapFactory.decodeStream(it)
-            return scaleBitmapToMaxDimension(bitmap)
+            return scaleBitmapToMaxDimension(bitmap, maxDimension)
         }
     } catch (e: Exception) {
         return null
@@ -69,17 +72,17 @@ fun Context.getImageFromExternalStorageByIdSync(imageId: Long): Bitmap? {
  * @param bitmap bitmap картинки, которую нужно уменьшить
  * @return уменьшенный bitmap
  * */
-private fun scaleBitmapToMaxDimension(bitmap: Bitmap): Bitmap {
+private fun scaleBitmapToMaxDimension(bitmap: Bitmap, maxDimension: Int): Bitmap {
     val maxBitmapDimension = max(bitmap.height, bitmap.width)
     val scaledHeight: Int
     val scaledWidth: Int
     val aspectRatio = bitmap.width.toFloat() / bitmap.height
-    if (maxBitmapDimension > MAX_DIMENSION) {
+    if (maxBitmapDimension > maxDimension) {
         if (bitmap.height > bitmap.width) {
-            scaledHeight = MAX_DIMENSION
+            scaledHeight = maxDimension
             scaledWidth = (scaledHeight * aspectRatio).roundToInt()
         } else {
-            scaledWidth = MAX_DIMENSION
+            scaledWidth = maxDimension
             scaledHeight = (scaledWidth / aspectRatio).roundToInt()
         }
     } else {
