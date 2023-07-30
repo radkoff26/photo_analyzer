@@ -19,16 +19,13 @@ class RoundedImageView @JvmOverloads constructor(
 
     private var onImageChangedListener: OnImageChangedListener? = null
 
-    var radius = 0F
-        private set
-
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         rectF.left = left.toFloat()
         rectF.top = top.toFloat()
         rectF.right = right.toFloat()
         rectF.bottom = bottom.toFloat()
-        radius = min(rectF.width(), rectF.height()) * CORNER_RADIUS_FACTOR
+        val radius = min(rectF.width(), rectF.height()) * CORNER_RADIUS_FACTOR
         path.addRoundRect(rectF, radius, radius, Path.Direction.CW)
     }
 

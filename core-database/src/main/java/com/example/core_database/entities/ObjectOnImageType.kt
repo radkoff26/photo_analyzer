@@ -12,6 +12,5 @@ enum class ObjectOnImageType {
     TRUCK,
     BUS,
     BIRD,
-    BOOK,
-    UNKNOWN
+    BOOK
 }

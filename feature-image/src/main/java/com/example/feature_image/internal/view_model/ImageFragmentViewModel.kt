@@ -76,7 +76,6 @@ internal class ImageFragmentViewModel @Inject constructor(
                 val bitmap = imageLoader.loadImage(imageId)!!
                 val imageInstance = imagesProvider.getImageById(imageId)!!
                 val analyzedImage = imageAnalyzer.analyzeImage(imageInstance, bitmap)
-                applicationDatabase.imageWithObjectsDao().insertImageWithObjects(analyzedImage)
                 if (type == null) {
                     analyzedImage
                 } else {

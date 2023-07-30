@@ -4,7 +4,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.core_database.converters.TimestampConverter
-import com.example.core_database.dao.ImageDao
 import com.example.core_database.dao.ImageWithObjectsDao
 import com.example.core_database.entities.Image
 import com.example.core_database.entities.ObjectOnImage
@@ -22,8 +21,6 @@ import com.example.core_database.entities.ObjectOnImage
     ]
 )
 abstract class ApplicationDatabase : RoomDatabase() {
-
-    abstract fun imageDao(): ImageDao
 
     abstract fun imageWithObjectsDao(): ImageWithObjectsDao
 

@@ -22,9 +22,12 @@ const val MAX_DIMENSION = 400
  * @param imageId id картинки, которую нужно получить
  * @return Flow, который эммитит bitmap картинки
  * */
-fun Context.getImageFromExternalStorageByIdScaledDown(imageId: Long): Flow<Bitmap?> {
+fun Context.getImageFromExternalStorageByIdScaledDown(
+    imageId: Long,
+    maxDimension: Int = MAX_DIMENSION
+): Flow<Bitmap?> {
     return flow {
-        val bitmap = getImageFromExternalStorageByIdSyncScaledDown(imageId)
+        val bitmap = getImageFromExternalStorageByIdSyncScaledDown(imageId, maxDimension)
         emit(bitmap)
     }.flowOn(Dispatchers.IO)
 }
@@ -44,23 +47,6 @@ fun Context.getImageFromExternalStorageByIdSyncScaledDown(
         contentResolver.openInputStream(uri).use {
             val bitmap = BitmapFactory.decodeStream(it)
             return scaleBitmapToMaxDimension(bitmap, maxDimension)
-        }
-    } catch (e: Exception) {
-        return null
-    }
-}
-
-/**
- * Функция, возвращающая bitmap определённой картинки из External Storage синхронно.
- * @param imageId id картинки, которую нужно получить
- * @return bitmap картинки или null, если произошла ошибка
- * */
-fun Context.getImageFromExternalStorageByIdSync(imageId: Long): Bitmap? {
-    try {
-        val uri =
-            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
-        contentResolver.openInputStream(uri).use {
-            return BitmapFactory.decodeStream(it)
         }
     } catch (e: Exception) {
         return null

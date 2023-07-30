@@ -9,12 +9,6 @@ import com.example.core_database.entities.ObjectOnImageType
 @Dao
 interface ImageWithObjectsDao {
 
-    @Query("SELECT * FROM image")
-    suspend fun getAllImages(): List<ImageWithObjects>
-
-    @Query("SELECT * FROM image LIMIT :pageSize OFFSET :startPosition")
-    suspend fun getPagedImages(startPosition: Int, pageSize: Int): List<ImageWithObjects>
-
     @Query(
         "SELECT DISTINCT imageId FROM object " +
                 "INNER JOIN image ON object.imageId = image.id " +

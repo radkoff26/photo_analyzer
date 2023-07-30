@@ -35,14 +35,6 @@ internal class OverlayView @JvmOverloads constructor(
         initPaints()
     }
 
-    fun clear() {
-        textPaint.reset()
-        textBackgroundPaint.reset()
-        boxPaint.reset()
-        invalidate()
-        initPaints()
-    }
-
     private fun initPaints() {
         textBackgroundPaint.color = Color.BLACK
         textBackgroundPaint.style = Paint.Style.FILL

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -74,9 +75,12 @@ class ImageFragment : Fragment() {
         imageFragmentViewModel.imageBitmapLiveData.observe(
             viewLifecycleOwner
         ) {
-            binding.image.setImageBitmap(it)
-
-            initAdapterAndOverlay()
+            if (it != null) {
+                binding.image.setImageBitmap(it)
+                // Только когда картинка произвела layout из-за установки картинки
+                // можно начинать устанавливать RecyclerView и OverlayView
+                initAdapterAndOverlayWhenImageIsSized()
+            }
         }
     }
 
@@ -84,6 +88,16 @@ class ImageFragment : Fragment() {
         _binding = null
         _objectsListAdapter = null
         super.onDestroyView()
+    }
+
+    private fun initAdapterAndOverlayWhenImageIsSized() {
+        val listener = object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                initAdapterAndOverlay()
+                binding.image.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        }
+        binding.image.viewTreeObserver.addOnGlobalLayoutListener(listener)
     }
 
     private fun initAdapterAndOverlay() {

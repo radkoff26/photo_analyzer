@@ -11,9 +11,9 @@ import org.tensorflow.lite.task.gms.vision.detector.Detection
 import org.tensorflow.lite.task.gms.vision.detector.ObjectDetector
 
 class ObjectDetectorHelper(
-    private var threshold: Float = 0.45f,
+    private var threshold: Float = 0.5f,
     private var numThreads: Int = 2,
-    private var maxResults: Int = 7,
+    private var maxResults: Int = 5,
     private val context: Context
 ) {
 
@@ -24,10 +24,6 @@ class ObjectDetectorHelper(
     }
 
     private var objectDetector: ObjectDetector? = null
-
-    fun clearObjectDetector() {
-        objectDetector = null
-    }
 
     private fun setupObjectDetector() {
         if (!TfLiteVision.isInitialized()) {

@@ -15,23 +15,28 @@ class ImageAnalyzerImpl constructor(
         val detectionResult = objectDetectorHelper.detectObjectsOnImage(bitmap)
             ?: return ImageWithObjects(image, emptyList())
 
-        val objectsOnImage = detectionResult.results.map {
-            val probableCategory = it.categories.first()
-            val type = try {
-                ObjectOnImageType.valueOf(probableCategory.label.uppercase())
-            } catch (e: Exception) {
-                ObjectOnImageType.UNKNOWN
+        val objectsOnImage = detectionResult.results
+            .filter {
+                try {
+                    ObjectOnImageType.valueOf(it.categories.first().label.uppercase())
+                    true
+                } catch (e: Exception) {
+                    false
+                }
             }
-            ObjectOnImage(
-                id = 0, // Auto-generated
-                imageId = image.id,
-                type = type,
-                left = it.boundingBox.left,
-                top = it.boundingBox.top,
-                right = it.boundingBox.right,
-                bottom = it.boundingBox.bottom
-            )
-        }
+            .map {
+                val probableCategory = it.categories.first()
+                val type = ObjectOnImageType.valueOf(probableCategory.label.uppercase())
+                ObjectOnImage(
+                    id = 0, // Auto-generated
+                    imageId = image.id,
+                    type = type,
+                    left = it.boundingBox.left,
+                    top = it.boundingBox.top,
+                    right = it.boundingBox.right,
+                    bottom = it.boundingBox.bottom
+                )
+            }
 
         return ImageWithObjects(
             image.copy(
